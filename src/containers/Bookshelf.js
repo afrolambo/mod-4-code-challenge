@@ -2,15 +2,13 @@ import React from "react";
 import Book from "../components/Book";
 
 const Bookshelf = props => {
-
-  const bookShelfBooks = props.books.map(book => {
-  	return <Book key={book.id} handleBookShelfClick={props.handleBookShelfClick} book={book} />
-  })
+  let book = props.bookshelf.map(bookObj => <Book key={bookObj.id} book={bookObj} clickHandler={props.clickHandler}/>)
+  
 
   return (
     <div>
       <h1>Book Shelf</h1>
-      <ul>{bookShelfBooks}</ul>
+      {book}
     </div>
   );
 };

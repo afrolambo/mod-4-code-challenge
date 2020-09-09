@@ -6,57 +6,76 @@ import Bookshelf from "./containers/Bookshelf";
 
 class App extends Component {
 
-  state = {
-  	books: [],
-  	bookShelf: [],
-  	lastBookId: 0
+  state = { 
+	books: [], 
+	bookshelf: []
   }
 
   componentDidMount() {
-
-  	fetch('http://localhost:3005/books')
-  	  .then(resp => resp.json())
-  	  .then(books => {
-  	  	this.setState({books})
-  	  })
+	  fetch("http://localhost:3005/books")
+	  .then(resp => resp.json())
+	  .then(books => {
+		  this.setState({
+			  books: books
+		  })
+	  })
   }
 
-  handleBookClick = (book) => {
-  	if(!this.state.bookShelf.includes(book)) {
-  	  this.setState({
-  		  bookShelf: [...this.state.bookShelf, book]
-  	  })
-  	 }
+  addClickHandler = (bookObj) => {
+	let bookShelf = [...this.state.bookshelf, bookObj]
+	this.setState({
+		bookshelf: bookShelf
+	})
   }
 
-  handleBookShelfClick = (bookObj) => {
-  	const stateCopy = [...this.state.bookShelf]
-  	const newState = stateCopy.filter(book => book.id !== bookObj.id)
-
-  	this.setState({
-  		bookShelf: newState
-  	})
-  }
-
-  handleFormSubmit = (e, bookObj) => {
-  	e.preventDefault()
-
-  	// this.setState({ lastBookId: this.state.books.length + 1 })
-
-	if(!this.state.books.includes(bookObj)) {
-  	  this.setState({
-  		books: [bookObj, ...this.state.books]
-  	  })
-  	}
+  removeClickHandler = (bookObj) => {
+	let newArray = this.state.bookshelf.filter(book => book.id !== bookObj.id)
+	this.setState({
+		bookshelf: newArray
+	})
   }
  
+  submitHandler = (bookObj) => {
+	  this.setState({
+		  books: [...this.state.books,bookObj ]
+	  }) 
+	  this.postBook(bookObj)
+
+  }
+
+  postBook = (bookObj) => {
+	  fetch("http://localhost:3005/books", {
+		  method: 'POST', 
+		  headers: {
+			  'content-type': 'application/json', 
+		  }, 
+		  body: JSON.stringify(bookObj)
+	  }).then(resp => resp.json())
+  }
+
+  deleteHandler = (bookObj) => {
+	let newArray = this.state.books.filter(book => book.id !== bookObj.id)
+	this.setState({
+		books: newArray
+	})
+	this.deleteBooks(bookObj)
+  }
+
+  deleteBooks = (bookObj) => {
+	  fetch(`http://localhost:3005/books/${bookObj.id}`, {
+		  method: 'DELETE'
+	  })
+  }
+
   render() {
+
+
     return (
     	<main>
     	  <h1>Angeloz Bookz</h1>
 	      <div className="book-container">
-	        <BookList handleFormSubmit={this.handleFormSubmit} handleBookClick={this.handleBookClick} books={this.state.books} />
-	        <Bookshelf handleBookShelfClick={this.handleBookShelfClick} books={this.state.bookShelf} />
+	        <BookList books={this.state.books} clickHandler={this.addClickHandler} submitHandler={this.submitHandler} deleteHandler={this.deleteHandler} />
+	        <Bookshelf bookshelf={this.state.bookshelf} clickHandler={this.removeClickHandler} />
 	      </div>
 	    </main>
     );

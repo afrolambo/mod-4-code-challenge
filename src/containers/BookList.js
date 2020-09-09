@@ -4,17 +4,17 @@ import Form from "../components/Form";
 
 class BookList extends Component {
 
-  render() {
+  book = () => {
+    return this.props.books.map(bookObj => <Book key={bookObj.id} book={bookObj} clickHandler={this.props.clickHandler} deleteHandler={this.props.deleteHandler} />)
+  } 
 
-  	const allBooks = this.props.books.map(book => {
-  	  return <Book key={book.id} handleBookClick={this.props.handleBookClick} book={book} />
-  	})
+  render() {
 
     return (
       <div className="book-list">
         <h1>Book List</h1>
-        <Form handleFormSubmit={this.props.handleFormSubmit} />
-        <ul>{allBooks}</ul>
+        <Form submitHandler={this.props.submitHandler} />
+        {this.book()}
       </div>
     );
   }
